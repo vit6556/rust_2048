@@ -1,12 +1,20 @@
 use std::io;
 use std::io::Write;
 
+pub enum Moves {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
 pub struct Board {
     size: usize,
     max_value: usize,
     board: Vec<Vec<usize>>,
 }
 
+// Basic impl
 impl Board {
     pub fn new(size: usize) -> Self {
         Self {
@@ -30,7 +38,118 @@ impl Board {
         self.board[x][y] = value;
         self.update_max_value(value);
     }
+}
 
+// Moves impl
+impl Board {
+    pub fn process_move(&mut self, m: Moves) {
+        match m {
+            Moves::Up => self.move_up(),
+            Moves::Down => self.move_down(),
+            Moves::Left => self.move_left(),
+            Moves::Right => self.move_right(),
+        };
+    }
+
+    fn move_up(&mut self) {
+        for j in 0..4 {
+            let mut li: usize = 0;
+            let ri: usize = j;
+            for i in 1..4 {
+                if self.board[i][j] != 0 {
+                    if self.board[i - 1][j] == 0 || self.board[i - 1][j] == self.board[i][j] {
+                        if self.board[li][ri] == self.board[i][j] {
+                            self.board[li][ri] *= 2;
+                        } else {
+                            if self.board[li][ri] != 0 {
+                                li += 1;
+                            }
+                            self.board[li][ri] = self.board[i][j];
+                        }
+                        self.board[i][j] = 0;
+                    } else {
+                        li += 1;
+                    }
+                }
+            }
+        }
+    }
+
+    fn move_down(&mut self) {
+        for j in 0..4 {
+            let mut li: usize = 3;
+            let ri: usize = j;
+            for i in (0..=2).rev() {
+                if self.board[i][j] != 0 {
+                    if self.board[i + 1][j] == 0 || self.board[i + 1][j] == self.board[i][j] {
+                        if self.board[li][ri] == self.board[i][j] {
+                            self.board[li][ri] *= 2;
+                        } else {
+                            if self.board[li][ri] != 0 {
+                                li -= 1;
+                            }
+                            self.board[li][ri] = self.board[i][j];
+                        }
+                        self.board[i][j] = 0;
+                    } else {
+                        li -= 1;
+                    }
+                }
+            }
+        }
+    }
+
+    fn move_left(&mut self) {
+        for i in 0..4 {
+            let li: usize = i;
+            let mut ri: usize = 0;
+            for j in 1..4 {
+                if self.board[i][j] != 0 {
+                    if self.board[i][j - 1] == 0 || self.board[i][j - 1] == self.board[i][j] {
+                        if self.board[li][ri] == self.board[i][j] {
+                            self.board[li][ri] *= 2;
+                        } else {
+                            if self.board[li][ri] != 0 {
+                                ri += 1;
+                            }
+                            self.board[li][ri] = self.board[i][j];
+                        }
+                        self.board[i][j] = 0;
+                    } else {
+                        ri += 1;
+                    }
+                }
+            }
+        }
+    }
+
+    fn move_right(&mut self) {
+        for i in 0..4 {
+            let li: usize = i;
+            let mut ri: usize = 3;
+            for j in (0..=2).rev() {
+                if self.board[i][j] != 0 {
+                    if self.board[i][j + 1] == 0 || self.board[i][j + 1] == self.board[i][j] {
+                        if self.board[li][ri] == self.board[i][j] {
+                            self.board[li][ri] *= 2;
+                        } else {
+                            if self.board[li][ri] != 0 {
+                                ri -= 1;
+                            }
+                            self.board[li][ri] = self.board[i][j];
+                        }
+                        self.board[i][j] = 0;
+                    } else {
+                        ri -= 1;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Show board impl
+impl Board {
     fn get_value_length(&self, current_value: usize) -> usize {
         let mut max_length = 0;
         let mut current_value = current_value;
