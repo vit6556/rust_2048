@@ -1,5 +1,6 @@
 use rand::Rng;
 use crate::game::board::Board;
+use crate::game::board::Moves;
 
 pub struct Game {
     board: Board,
@@ -18,7 +19,7 @@ impl Game {
         game
     }
 
-    fn put_new_value(&mut self) {
+    pub fn put_new_value(&mut self) {
         let cords: (usize, usize) = loop {
             let x = rand::thread_rng().gen_range(0..=3);
             let y = rand::thread_rng().gen_range(0..=3);
@@ -36,10 +37,21 @@ impl Game {
         self.board.set_value(cords.0, cords.1, value);
     }
 
+    pub fn process_move(&mut self, m: Moves) -> bool {
+        let score = self.board.process_move(m);
+        self.score += score;
+        if self.board.check_board_full() {
+            return false;
+        }
+
+        true
+    }
+
     pub fn show_board(&self) {
-        //print!("\x1B[2J\x1B[1;1H");
+        print!("\x1B[2J\x1B[1;1H");
         println!("Score: {}", self.score);
         self.board.show();
+        println!("[w a s d], q for quit")
     }
 }
 

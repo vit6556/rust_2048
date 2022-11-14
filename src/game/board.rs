@@ -38,20 +38,34 @@ impl Board {
         self.board[x][y] = value;
         self.update_max_value(value);
     }
+
+    pub fn check_board_full(&self) -> bool {
+        for i in 0..self.size {
+            for j in 0..self.size {
+                if self.board[i][j] == 0 {
+                    return false;
+                }
+            }
+        }
+
+        true
+    }
 }
 
 // Moves impl
 impl Board {
-    pub fn process_move(&mut self, m: Moves) {
-        match m {
+    pub fn process_move(&mut self, m: Moves) -> usize {
+        let score = match m {
             Moves::Up => self.move_up(),
             Moves::Down => self.move_down(),
             Moves::Left => self.move_left(),
             Moves::Right => self.move_right(),
         };
+        score
     }
 
-    fn move_up(&mut self) {
+    fn move_up(&mut self) -> usize {
+        let mut score = 0;
         for j in 0..4 {
             let mut li: usize = 0;
             let ri: usize = j;
@@ -60,6 +74,7 @@ impl Board {
                     if self.board[i - 1][j] == 0 || self.board[i - 1][j] == self.board[i][j] {
                         if self.board[li][ri] == self.board[i][j] {
                             self.board[li][ri] *= 2;
+                            score += self.board[li][ri];
                         } else {
                             if self.board[li][ri] != 0 {
                                 li += 1;
@@ -73,9 +88,11 @@ impl Board {
                 }
             }
         }
+        score
     }
 
-    fn move_down(&mut self) {
+    fn move_down(&mut self) -> usize{
+        let mut score = 0;
         for j in 0..4 {
             let mut li: usize = 3;
             let ri: usize = j;
@@ -84,6 +101,7 @@ impl Board {
                     if self.board[i + 1][j] == 0 || self.board[i + 1][j] == self.board[i][j] {
                         if self.board[li][ri] == self.board[i][j] {
                             self.board[li][ri] *= 2;
+                            score += self.board[li][ri];
                         } else {
                             if self.board[li][ri] != 0 {
                                 li -= 1;
@@ -97,9 +115,11 @@ impl Board {
                 }
             }
         }
+        score
     }
 
-    fn move_left(&mut self) {
+    fn move_left(&mut self) -> usize {
+        let mut score = 0;
         for i in 0..4 {
             let li: usize = i;
             let mut ri: usize = 0;
@@ -108,6 +128,7 @@ impl Board {
                     if self.board[i][j - 1] == 0 || self.board[i][j - 1] == self.board[i][j] {
                         if self.board[li][ri] == self.board[i][j] {
                             self.board[li][ri] *= 2;
+                            score += self.board[li][ri];
                         } else {
                             if self.board[li][ri] != 0 {
                                 ri += 1;
@@ -121,9 +142,11 @@ impl Board {
                 }
             }
         }
+        score
     }
 
-    fn move_right(&mut self) {
+    fn move_right(&mut self) -> usize{
+        let mut score = 0;
         for i in 0..4 {
             let li: usize = i;
             let mut ri: usize = 3;
@@ -132,6 +155,7 @@ impl Board {
                     if self.board[i][j + 1] == 0 || self.board[i][j + 1] == self.board[i][j] {
                         if self.board[li][ri] == self.board[i][j] {
                             self.board[li][ri] *= 2;
+                            score += self.board[li][ri];
                         } else {
                             if self.board[li][ri] != 0 {
                                 ri -= 1;
@@ -145,6 +169,7 @@ impl Board {
                 }
             }
         }
+        score
     }
 }
 
